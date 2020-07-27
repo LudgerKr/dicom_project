@@ -17,10 +17,6 @@ export class PatientFormComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  patientForm(form: NgForm) {
-      console.log(form.value);
-  }
-
   handleFileInput(element) {
     this.fileToUpload = element.target.files;
   }
@@ -34,8 +30,7 @@ export class PatientFormComponent implements OnInit {
     }
     if (fileExtension.toLowerCase() === 'dcm') {
       const formData: FormData = new FormData();
-
-    formData.append('file', this.fileToUpload[0]);
+      formData.append('file', this.fileToUpload[0]);
       this.http.post('http://localhost:8080/upload', formData)
           .subscribe((response) => {
             console.log('response received is ', response);
