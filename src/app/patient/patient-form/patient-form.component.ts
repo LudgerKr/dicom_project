@@ -9,8 +9,10 @@ import {HttpClient  ,HttpRequest,  HttpEvent} from '@angular/common/http';
   styleUrls: ['./patient-form.scss']
 })
 export class PatientFormComponent implements OnInit {
-
+  img = null;
   fileToUpload: Array <File>;
+  imageToShow: any;
+  name: String;
 
   constructor(private router: Router, private http: HttpClient) { }
 
@@ -36,13 +38,35 @@ export class PatientFormComponent implements OnInit {
       const formData: FormData = new FormData();
 
     formData.append('file', this.fileToUpload[0]);
-      this.http.post('http://localhost:8080/upload', formData)
+      this.http.post('http://localhost:8080/upload', formData,{ responseType: 'text' })
           .subscribe((response) => {
-            console.log('response received is ', response);
+            this.name = response;
           });
     } else {
       alert('You must select a DICOM (.dcm) file for upload');
       return false;
     }
   }
+  getImage(){
+  this.http.get('http://localhost:8080/image', { responseType: 'blob' })
+    .subscribe(result => {
+      this.img = result;
+      console.log(result)
+      this.createImageFromBlob(this.img)
+    });
+    
+  }
+
+  createImageFromBlob(image: Blob) {
+    let reader = new FileReader();
+    reader.addEventListener("load", () => {
+       this.imageToShow = reader.result;
+       console.log(this.imageToShow)
+    }, false);
+ 
+    if (image) {
+       reader.readAsDataURL(image);
+    }
+ }
+
 }

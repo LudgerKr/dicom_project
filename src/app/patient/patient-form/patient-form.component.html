@@ -5,9 +5,13 @@
         <label for="DICOMfile">
           Select DICOM file :
         </label>
-        <input name="DICOMfile" id="DICOMfile" enctype="multipart/form-data"  type="file" (change)="handleFileInput($event)"/>
+        <input name="DICOMfile" id="DICOMfile" enctype="multipart/form-data" type="file" (change)="handleFileInput($event)"/>
         <button  class="btn btn-primary" (click)="upload()" id="btnUpload">Upload</button>
+        <h1>Patient name : {{name}}</h1>
+        <button  class="btn btn-primary" (click)="getImage()" id="btnUpload">get</button>
+        <img mat-card-sm-image src="{{imageToShow}}" />
       </div>
+
     </form>
   </div>
 </div>
