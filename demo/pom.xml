@@ -13,17 +13,14 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>demo</name>
 	<description>Demo project for Spring Boot</description>
-
 	<properties>
 		<java.version>11</java.version>
 	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -35,9 +32,44 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.dcm4che3.data</groupId>
+			<artifactId>data</artifactId>
+			<version>1.0</version>
+			<scope>test</scope>
+			<systemPath>${project.basedir}/lib/dcm4che-core-5.22.3.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.dcm4che3.image</groupId>
+			<artifactId>image</artifactId>
+			<version>1.0</version>
+			<scope>test</scope>
+			<systemPath>${project.basedir}/lib/dcm4che-image-5.22.3.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.dcm4che3.imageio</groupId>
+			<artifactId>imageio</artifactId>
+			<version>1.0</version>
+			<scope>test</scope>
+			<systemPath>${project.basedir}/lib/dcm4che-imageio-5.22.3.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.7</version>
+			<systemPath>${project.basedir}/lib/commons-io-2.7.jar</systemPath>
+		</dependency>
 	</dependencies>
-
 	<build>
+		<resources>
+			<resource>
+				<directory>lib</directory>
+				<targetPath>BOOT-INF/lib/</targetPath>
+				<includes>
+					<include>**/*.jar</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
