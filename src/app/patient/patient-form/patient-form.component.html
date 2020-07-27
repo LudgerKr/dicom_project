@@ -5,7 +5,7 @@
         <label for="DICOMfile">
           Select DICOM file :
         </label>
-        <input name="DICOMfile" id="DICOMfile" type="file" (change)="handleFileInput($event)"/>
+        <input name="DICOMfile" id="DICOMfile" enctype="multipart/form-data"  type="file" (change)="handleFileInput($event)"/>
         <button  class="btn btn-primary" (click)="upload()" id="btnUpload">Upload</button>
       </div>
     </form>

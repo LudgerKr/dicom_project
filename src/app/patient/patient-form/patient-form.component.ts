@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import { Router} from '@angular/router';
-import {HttpClient } from '@angular/common/http';
+import {HttpClient  ,HttpRequest,  HttpEvent} from '@angular/common/http';
 
 @Component({
   selector: 'app-patient-form',
@@ -33,7 +33,10 @@ export class PatientFormComponent implements OnInit {
       fileExtension = fileElement.value.substring(fileElement.value.lastIndexOf('.') + 1, fileElement.value.length);
     }
     if (fileExtension.toLowerCase() === 'dcm') {
-      this.http.post('http://127.0.0.1:4200/upload', this.fileToUpload)
+      const formData: FormData = new FormData();
+
+    formData.append('file', this.fileToUpload[0]);
+      this.http.post('http://localhost:8080/upload', formData)
           .subscribe((response) => {
             console.log('response received is ', response);
           });
