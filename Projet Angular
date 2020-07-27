@@ -1,0 +1,1802 @@
+Projet Angular JS :
+
+This package has installed:
+	•	Node.js v12.16.1 to /usr/local/bin/node
+	•	npm v6.13.4 to /usr/local/bin/npm
+Make sure that /usr/local/bin is in your $PATH.
+
+NPM : package manager qui permet l'installation d'énormément d'outils et de librairies.
+
+npm install -g npm@latest
+npm install -g @angular/cli
+
+
+---------------------
+Préparez le projet: | 
+---------------------
+
+ng new mon-projet-angular --style=scss --skip-tests=true.
+
+Le premier flag (élément de la commande suivant un double tiret --) crée des fichiers  .scss  pour les styles plutôt que des fichiers  .css, le second flag annule la création des fichiers test.
+
+
+----------------------
+Installer boostrap : | 
+----------------------
+npm install bootstrap@3.3.7 --save
+
+---------------------------------------------------------
+La structure des components d'une application Angular : |
+---------------------------------------------------------
+
+Les components sont les composantes de base d'une applicarion Angular  une application est une arborescence de plusieurs components.
+
+Tout d'abord, notre AppComponent est notre component principal : tous les autres components de notre application seront emboîtés ou "nested" dans celui-ci.
+On peut imaginer un component pour la barre de menu, un autre pour la partie contenu et un dernier pour le menu sur la droite.
+
+------------------------
+La structure du code : |
+------------------------
+
+Le dossier e2e est généré pour les tests end-to-end.
+Ensuite le dossier node_modules contient toutes les dépendances pour votre application : les fichiers source Angular et TypeScript, par exemple.
+Le dossier qui vous intéressera principalement est le dossier src, où vous trouverez tous les fichiers sources pour votre application.
+
+Dans le fichier app.component.ts :
+A l'intérieur de @Component(), se trouvent les élémets suivants :
+	- selector : il s'agit du nom qu'on utilisera comme balise HTML pour afficher ce component, comme pour <app-root> dans le index.html. Ce om doit être uniqu et ne doit pas être un om réservé HTML de type <div>, <body> etc. On utilisera donc très souvnt un préfixe comme app, par exemple;
+	- templaceUrl : le chemin vers le code HTML à injecter;
+	- styleUrls : un array contenant un ou plusieurs chemins vers les feuilles de styles qui concernent ce component;
+
+Quand Angular rencontre la balise <app-root> dans le document HTML, il sait qu'il doit en remplacer le contenu par celui du template app.component.html, en appliquant les styles app.component.scss, le tout géré par la logique du fichier app.component.ts. 
+
+--------------------------------
+1er test : modifier le titre : |
+--------------------------------
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  title = 'my awesome app';
+}
+
+----------------------
+Créer un component : |
+----------------------
+
+ng generate component mon-premier
+
+Le CLI a créé un nouveau sous-dossier et y créé un fichier template, une feuille de styles, un fichier component et un ficheir spec : il s'agit d'un fichier de test.
+Le CLI nous prévient également qu'il a mis à jour le fichier app.moduule.ts 
+Le CLI a ajouté MonPremierComponent à l'array declarations de votre module. Il a égalemennt ajouté le statement import en haut du fichier. Ce sont des étapes nécessaires pour que vous puissiez utiliser votre compoent au sein de votre application Angular.
+
+Vous constaterez que le CLI a créé un selecteur : app-mon-premier. Nous pouvons donc utiliser ce sélecteur dans notre code pour y insérer ce component.
+
+Revenez dans app.component.html et modifiez-le comme suit :
+
+<div style="text-align:center">
+  <h1>
+    Welcome to {{ title }}!
+  </h1>
+</div>
+<app-mon-premier></app-mon-premier>
+
+
+Dans votre navigateur, vous verrez le même titre qu'avant t,, sur une deuxième ligne, le teste "mon-premier works". Il s'agit du texte par défaut créé par le CLI que vous trouverez dans mon-premier-component.html
+
+-------------------------------
+Gérer des données dynamiques: |
+-------------------------------
+
+L'intérêt d'utiliser Angular est de pouvoir gérer le DOM (Document Object Model : les éléments HTMl affichés par le navigateur) de manière dynamiqu, et pour cela, il faut utiliser la liaison de données, ou "databinding".
+Le databinding, c'est la communication entre votre TypeScript et le template HTML qui est montré à l'utilisateur. Cette communication est divisée en deux directions :
+	- les informations venant de votre code qui doivent être affichées dans le navigateur, comme par exemple des informations que votre code a calculé ou récupéré sur un serveur. Les deux principales méthodes pour cela sont le "string interpolation" et le "property binding";
+	- les informations venant du template qui doivent être gérées parle code : l'utilisateur a rempli un formulaire ou cliqué sur un bouton, et il faut réagir et gérer ces événements. On parlera de "event binding" pour cela.
+
+Il existe également des situations comme des formulaires, par exemple, où l'on voudra ne communication à double sens : on parle donc de "two-way binding".
+
+------------------------
+String interpolation : |
+------------------------
+
+L'interpolation est la manière la plus basique d'émettre des données issues de votre code TypeScript.
+Imaginez une applicatio qui vérifie l'état de vos appareils électriques à la maison pour voir s'ils sont allumés ou non. Créer maintenant un nouveau component AppareilComponent avec la commande suivante :
+
+ng generate component appareil
+
+Ouvrez ensuite appareil.component.html et supprimer le contenu, et entrez le code suivant :
+
+<li class="list-group-item">
+  <h4>Ceci est dans AppareilComponent</h4>
+</li>
+
+Ensuite, ouvrez app.component.html, et remplacez tout le contenu comme suit :
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <h2>Mes appareils</h2>
+      <ul class="list-group">
+        <app-appareil></app-appareil>
+        <app-appareil></app-appareil>
+        <app-appareil></app-appareil>
+      </ul>
+    </div>
+  </div>
+</div>
+
+Maintenant remplacer dans appareil.component.html : 
+
+<li class="list-group-item">
+  <h4>Appareil : {{ appareilName }}</h4>
+</li>
+
+Ici, vous trouvez la syntaxe pour l'interpolation : les doubles accolades {{ }}. Ce qui se trouve entre les doubles accolades correspond à l'expression TypeScript que nous voulons afficher, l'expression la plus simple étant une variable. D'ailleurs puisque la variable appareilName n'existe pas encore, votre navigateur n'affiche rien à cet endroit pour l'instant. 
+
+On va modifier le fichier appareil.component.html : 
+
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-appareil',
+  templateUrl: './appareil.component.html',
+  styleUrls: ['./appareil.component.scss']
+})
+export class AppareilComponent implements OnInit {
+
+  appareilName: string = 'Machine à laver';
+  appareilStatus: string = 'éteint';
+
+  constructor() { }
+
+  ngOnInit() {
+  }
+
+  getStatus() {
+    return this.appareilStatus;
+  }
+}
+
+--------------------
+Property binding : |
+--------------------
+
+La liaison par propriété ou "property binding" est une autre façon de créer de la communication dynamique entre votre TypeScript et votre template : plutôt qu'afficher simplement le contenu d'une variable, vous pouvez modifier dynamiquement les propriétés d'un élément du DOM en fonction de données dans votre TypeScript.
+
+Pour votre application des appareils électriques imaginez que si l'utilisateur est authentifié, on lui laisse la possibilité d'allumer tous les appreils de la maison. Puisque l'authentification est une valeur globale, ajoutez une variable boolean dans appComponent.
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  isAuth = false;
+}
+
+Ajoutez maintenant u bouton au template global app.component.html, en dessous de la liste des appareils.
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <h2>Mes appareils</h2>
+      <ul class="list-group">
+        <app-appareil></app-appareil>
+        <app-appareil></app-appareil>
+        <app-appareil></app-appareil>
+      </ul>
+      <button class="btn btn-success" disabled>Tout allumer</button>
+    </div>
+  </div>
+</div>
+
+La propriété disabled permet de désactiver le bouton. Afin de lier cette propriété au TypeScript, il faut le mettre etre crochets [] et l'associer à la variable ainsi :
+ 
+<button class="btn btn-success" [disabled]="!isAuth">Tout allume</button>
+
+Le ! fait que le bouton est désactivé lorsque isAuth === false. Pour montrer que cette liaison est dynamique créez une méthode constructor dans AppComponent, dans laquelle vous créerez une timeout qui associe la valeur true à isAuth après 4 secondes (pour simuler, par exemple, le temps d'un appel API): 
+
+
+export class AppComponent {
+  isAuth = false;
+
+  constructor() {
+    setTimeout(
+      () => {
+        this.isAuth = true;
+      }, 4000
+    );
+  }
+}
+
+Pour en voir l'effet, recharger la page dans votre navigateur et observer comment le bouton s'active au bout de quatre secondes. Pour l'instant le bouton ne fait rien : vous découvrirez comment exécuter du code lorsque l'utilisateur cliquera dessus avec la liaison des évéements, ou "event binding".
+
+----------------- 
+Event binding : |
+-----------------
+
+Avec le string interpolation et le property binding, vous savez commuiquer depuis votre TypeScrit vers le template HTML. Maintenant, je vais vous montrer comment réagir dans votre code TypeScript aux événements venant du template HTML.
+Actuellement, vous avez un bouton sur votre template qui s'active au bout de 4 secondes. Vous allez maintenant lui ajouter une fonctionnalité liée à l'événement "click" (déclenché quand l'utilisateur clique dessus).
+
+Ajouter la liaison suivante à votre bouton dans le template HTML :
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <h2>Mes appareils</h2>
+      <ul class="list-group">
+        <app-appareil></app-appareil>
+        <app-appareil></app-appareil>
+        <app-appareil></app-appareil>
+      </ul>
+      <button class="btn btn-success" 
+              [disabled]="!isAuth" 
+              (click)="onAllumer()">Tout allumer</button>
+    </div>
+  </div>
+</div>
+
+Comme vous pouvez le constater, on utlise les parenthèses () pour créer une liaison à un événement. Pour l'instant, la méthode onAllumer() n'existe, donc je vous proposer de la créer maintenant dans app.compoent.ts, en dessous du constructeur.
+Il existe une convention de nomenclature pour les méthodes liées aux événements que j'ai employée ici : "on" + le nom de l'événement. Cela permet, entre autres, de suivre plus facilement l'éxécution des méthodes lorsque l'application devient plus complexe.
+
+La méthode affichera simplement un message dans la console dans un premier temps :
+
+onAllumer() {
+    console.log('On allume tout !');
+}
+
+Enregistrez le fichir, et ouvrez la console dans votre navigateur. Lorsque le bouton s'active, cliquez dessus, et vous verrez votre essage apparaître dans la console.
+
+-------------------
+Two-way binding : |
+-------------------
+
+La liaison à double sens (ou two-way binding) utilise la liaison par propriété et la liaison par événement en même temps; on l'utilise par exemple, pour les formulaires, afin de pouvoir déclarer et de récupérer le contenu des champs, entre autres.
+
+Pour pouvoir utliser le two-way binding, il vous faut importer FormsModule depuis @angular/forms dans votre application. Vous pouvez accomplir cela en l'ajoutant à l'array imports de votre AppModule (sans oublier d'ajouter le statement import correspondant en haut du fichier):
+
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+
+
+import { AppComponent } from './app.component';
+import { MonPremierComponent } from './mon-premier/mon-premier.component';
+import { AppareilComponent } from './appareil/appareil.component';
+import { FormsModule } from '@angular/forms';
+
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    MonPremierComponent,
+    AppareilComponent
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+Le two-way binding emploie le mélange des syntaxes de property binding et d'event binding : des crochets et des parenthèses [( )]. Pour une première démonstration, ajoutez un <input> dans votre template appareil.component.html et liez-le à la variable appareilName en utilisant la directive ngModel :
+
+<li class="list-group-item">
+  <h4>Appareil : {{ appareilName }} / Status : {{ getStatus() }}</h4>
+  <input type="text" class="form-control" [(ngModel)]="appareilName">
+</li>
+
+Dans votre template, vous verrez un <input> par aparreil. Le nom de l'appareil est déjà indiqué dedans, et si vous le modifiez, le conteu du <h4> est modifié avec. Ainsi vous voyez également que chaque instance du component AppareilComponent est entièrement indépendante une fois créée : le fait d'en modifier une ne chage rien aux autres. Ce concept est très important, et il s'agit de l'une des plus grandes utilités d'Angular.
+
+-----------------------------
+Propriétés personnalisées : |
+-----------------------------
+
+Il est possible de créer des propriétés personalisées dans un component afin de pouvoir lui transmettre des données depuis l'extérieur.
+Il est également possible de créer des événements personalisés.
+
+Pour l'application des appareils électriques, il serait intéressant de faire en sorte que chaque instance d'AppareilComponent ait un nom différent qu'on puisse régler depuis l'extérieur du code. Pour ce faire, il faut utiliser le décorateur @Input() en remplaçant la déclaration de la variable appareilName :
+
+import {Component, Input, OnInit} from '@angular/core';
+
+@Component({
+  selector: 'app-appareil',
+  templateUrl: './appareil.component.html',
+  styleUrls: ['./appareil.component.scss']
+})
+export class AppareilComponent implements OnInit {
+
+  @Input() appareilName: string;
+  appareilName = 'Machine à laver';
+  appareilStatus = 'Eteint';
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+  getStatus() {
+    return this.appareilStatus;
+  }
+
+  onAllumer() {
+    console.log('On allume tout');
+  }
+
+}
+
+N'oubliez pas d'importer Input depuis @angular/core enhaut du fichier !
+
+Ce décorateu, en effet, crée une propriété appareilName qu'on peut fixer depuis la balise <app-appareil> :
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <h2>Mes appareils</h2>
+      <ul class="list-group">
+        <app-appareil appareilName="Machine à laver"></app-appareil>
+        <app-appareil appareilName="Frigogidère"></app-appareil>
+        <app-appareil appareilName="Ordinateur"></app-appareil>
+      </ul>
+      <button class="btn btn-success"
+              [disabled]="!isAuth"
+              (click)="onAllumer()">Tout allumer</button>
+    </div>
+  </div>
+</div>
+
+C'estune première étape intéressante, mais ce serait encore plus dynamique de pouvoir passer des variables depuis AppComponent pour nommer les appareils (on peut imaginer une autre partie de l'application qui récupérerait ces noms depuis un serveur, par exemple). Heureusement, vous savez déjà utiliser le property binding !
+
+Créez d'abord vos trois variables dans AppComponent :
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  isAuth = false;
+  
+  appareilOne   = 'Machine à laver';
+  appareilTwo   = 'Frigogidère';
+  appareilThree = 'Ordinateur';
+
+  constructor() {
+    setTimeout(
+      () => {
+        this.isAuth = true;
+      },
+      4000
+    );
+  }
+
+  onAllumer() {
+    console.log('On allume tout');
+  }
+}
+
+Maintenant, utilisez les crochets [] pour lier le contenu de ces variables à la propriété du component :
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <h2>Mes appareils</h2>
+      <ul class="list-group">
+        <app-appareil [appareilName]="appareilOne"></app-appareil>
+        <app-appareil [appareilName]="appareilTwo"></app-appareil>
+        <app-appareil [appareilName]="appareilThree"></app-appareil>
+      </ul>
+      <button class="btn btn-success"
+              [disabled]="!isAuth"
+              (click)="onAllumer()">Tout allumer</button>
+    </div>
+  </div>
+</div>
+
+C'est une première étape intéressante, mais ce serait encore plus dynamique de pouvoir passer des variables depuis  AppComponent  pour nommer les appareils (on peut imaginer une autre partie de l'application qui récupérerait ces noms depuis un serveur, par exemple).  Heureusement, vous savez déjà utiliser le property binding !
+
+Créez d'abord vos trois variables dans AppComponent :
+
+export class AppComponent {
+  isAuth = false;
+  
+  appareilOne = 'Machine à laver';
+  appareilTwo = 'Frigo';
+  appareilThree = 'Ordinateur';
+
+  constructor() {
+
+Maintenant, utilisez les crochets  []  pour lier le contenu de ces variables à la propriété du component :  
+
+<ul class="list-group">
+    <app-appareil [appareilName]="appareilOne"></app-appareil>
+    <app-appareil [appareilName]="appareilTwo"></app-appareil>
+    <app-appareil [appareilName]="appareilThree"></app-appareil>
+</ul>
+
+Vous pouvez également créer une propriété pour régler l'état de l'appareil :
+
+export class AppareilComponent implements OnInit {
+
+  @Input() appareilName: string;
+  @Input() appareilStatus: string;
+
+  constructor() {
+
+<ul class="list-group">
+    <app-appareil [appareilName]="appareilOne" [appareilStatus]="'éteint'"></app-appareil>
+    <app-appareil [appareilName]="appareilTwo" [appareilStatus]="'allumé'"></app-appareil>
+    <app-appareil [appareilName]="appareilThree" [appareilStatus]="'éteint'"></app-appareil>
+</ul>
+
+Notez bien que si vous employez les crochets pour le property binding et que vous souhaitez y passez un string directement, il faut mettre entre apostrophes, car entre les guillemets, il doit y avoir un statement de TyoeScript valable. Si vous omettez les apostrophes, vous essayez d'y passer une variable nommée allumé ou éteint et l'application ne compilera pas.
+
+
+----------------------------------------------
+Structurez le document avec des Directives : |
+----------------------------------------------
+
+Les directives sont des instructions intégrées dans le DOM qu vous utiliserez presque systématiquement quand vous créerez des applications Angular. Quand Angular lit votre template et recontre une directive qu'il reconnait, il suit les instructions correspondantes. Vous pouvez créer vos propres directives, mais dans le cadre de ce cours, nous allons uiquement aborder ccertaines directives qui sont fournies avec Angular et qui sont extrêement utiles.
+
+Il existe deux types principaux de directive : es directives structurelles et les directives par attribut.
+
+--------------------------------
+Les directives structurelles : |
+--------------------------------
+
+Ce sont les directives qui, comme leur nom l'indique, modifient la structure dudocument. Dans ce chapitre, vous allez en découvrir deux (il en existe d'autres) : *ngIf pour afficher des données de façon conditionnelle, et *ngFor, pour itérer des données dans un array, par exemple.
+
+- *ngIf : Un component auquel on ajoute la directive *ngIf = "condition" be s'affichera que si la condition est "truthy" (elle retourne la valeur true où la variable mentionnée est définie et non--nulle), comme un statement if classique.
+Pour une démonstration simple, ajoutez une <div> rouge qui ne s'affichera que si l'appareil est éteint :
+
+<li class="list-group-item">
+  <div style="width: 20px; height: 20px; background-color: red;"
+       *ngIf = "appareilStatus === 'Eteint'"></div>
+  <h4>Appareil : {{ appareilName }} / Status : {{ getStatus() }}</h4>
+  <input type="text" class="form-control" [(ngModel)]="appareilName">
+</li>
+
+
+- *ngFor : Lorsque l'on ajoute la directive *ngFor = let obj of myArray" à un component, Angular itérera l'array myArray et affichera un component par objet obj. Pour en comprendre l'utilisation, je vous propose de modifier la façon dont votre application génére des appareils électriques.
+
+On peut imaginer que votre application récupère, depuis un serveur, un array contenant tous les appareils et leurs états. Pour l'instat, créez cet array directement dans AppComponent :
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  isAuth = false;
+
+  appareils = [
+    {
+      name    : 'Machine à laver',
+      status  : 'éteint'
+    },
+    {
+      name    : 'Frigogidère',
+      status  : 'allumé'
+    },
+    {
+      name    : 'Ordinateur',
+      status  : 'éteint'
+    }
+  ]
+
+  constructor() {
+    setTimeout(
+      () => {
+        this.isAuth = true;
+      },
+      4000
+    );
+  }
+
+  onAllumer() {
+    console.log('On allume tout');
+  }
+}
+
+Vous avez un array avec trois objets, chaque objet ayant ue propriété name et une propriété status. Vous pourriez même créer une inferface ou une class TypeScript Appareil, mais dans ce cas simple ce n'est pas nécessaire.
+
+Maintenant la magie *ngFor :
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <h2>Mes appareils</h2>
+      <ul class="list-group">
+        <app-appareil  *ngFor="let appareil of appareils"
+                       [appareilName]="appareil.name"
+                       [appareilStatus]="appareil.status"></app-appareil>
+      </ul>
+      <button class="btn btn-success"
+              [disabled]="!isAuth"
+              (click)="onAllumer()">Tout allumer</button>
+    </div>
+  </div>
+</div>
+
+Le statement let appareil of appareils, comme dans une for loop classique, itère pour chaque élément appareil (nom arbitraire) de l'array appareils. Après cette directive, vous pouvez maintenant utiliser l'objet appareil, dont vous connaissez la forme, à l'intérieur de cette balise HTML. Vous pouvez donc utiliser le property biniding, et y passer les propriètés name et status de ce objet.
+
+N'oubliez pas l'astérisque devant ces directives, qui signifie à Angular de les traiter comme directives structurelles !
+
+--------------------------------
+Les directives par attributs : |
+--------------------------------
+
+A la différences des directives structurelles, les diretives par attribut modifient le comportement d'un objet déjà existant. Vous avez déjà utilisé une directive de ce type sans le savoir : la directive ngModel que vous avez employée pour le two-way binding, qui modifie a valeur du <input> et répond à tout changement qu'on lui apporte. Je vais vous montrer deux autres exemples très utiles : ngStyleet ngClass, qui permettent d'attribuer des styles ou des classes de manière dynamique.
+
+- ngStyle : Cette directive permet d'appliquer des styles à un objet du DOM de manière dynamique. Imaginez que, pour l'application des appareils électriques,, vous souhaitiez modifier la couleur du texte selon si l'appareil est allumé ou non, disons vert pour allumé, rouge pour éteint. ngStyle vous permeet de faire cela :
+
+<h4 [ngStyle]="{color: getColor()}">Appareil : {{ appareilName }} -- Statut : {{ getStatus() }}</h4>
+
+ngStyle prend un objet JS de type clé-valeur, avec comme clé le style à modifier, et comme valeur la valeur souhaitée pour ce style. Ici, vous faitesappel à une fonction getColor(), dans AppreilCompoent que vous allez maintenant créer :
+
+  getColor() {
+    if(this.appareilStatus === 'allumé')
+      return 'green';
+    else (this.appareilStatus === 'éteint')
+      return 'red';
+  }
+
+Cette fonction retourne la valeur 'green' si l'appareil est allumé, et 'red' s'il est éteint, modifiant ainsi la couleur du texte dans le template.
+
+- ngClass : Au-delà de modifier des styles directement, il peut etre utile d'ajouter des classes CSS à un élément de mainière dyamique. Comme ngStyle, ngClass prend un objet clé-valeur, mais cett fois avec la classe à appliquer en clé, et la condition en valeur.
+
+Pour cet exemple, je vous propose des classes Bootstrap à la balise <li> en fonction du statut de l'appareil :
+
+<li [ngClass]="{'list-group-item': true,
+                'list-group-item-success': appareilStatus === 'allumé',
+                'list-group-item-danger': appareilStatus === 'éteint'}">
+  <div style="width:20px;height:20px;background-color:red;"
+       *ngIf="appareilStatus === 'éteint'"></div>
+  <h4 [ngStyle]="{color: getColor()}">Appareil : {{ appareilName }} -- Statut : {{ getStatus() }}</h4>
+  <input type="text" class="form-control" [(ngModel)]="appareilName">
+</li>
+
+Angular appliquera donc systématiquement la classe list-group-item, et selon le contenu de la variable appareilStatus, appliquera l'une ou l'autre des deux autres classes. Vous pouvez bien évidemment créer vos propres classes et les utiliser; j'ai simplement choisi des classes Bootstrap pour simplifier l'explication.
+
+Que ce soit pour ngStyle ou pour ngClass, les objets JS peuvent être des variables valables dans votre TypeScript qui seront ensuite référencées par la directive, par exemple : [ngClass] = "myclassObject".
+
+-----------------------------------------------------
+Modifiez les données en temps réel avec les Pipes : |
+-----------------------------------------------------
+
+Les pipes prennent des données en input, les transforment, et puis affichent les données modifiées dans le DOM. Il y a des pipes fouris avec Angular, et vous pouvez également créer vos propres pipes si vous en avez besoin. Je vous propose de commencer avvec les pipes fournis avvec Angular.
+
+-----------------------------------
+Utlisez et paramétrez les Pipes : |
+-----------------------------------
+
+Un pipe que l'on utilise très souvent est DatePipe, qui analyse des objets JS de type Date et qui les affiche d'une manière plus lisible que leur encodage de base. Par exemple, imaginez que vous vouliez ajouter la date de la dernière mise à jour dans votre application des appareils électriques. Commencez par créer cet objet dans AppComponent et par l'afficher directement dans le template :
+
+export cla AppComponent {
+  isAuth = false;
+  lastUpdate = new Date();
+} 
+
+export class AppComponent {
+  isAuth = false;
+  lastUpdate = new Date();
+
+<h2>Mes appareils</h2>
+<p>Mis à jour : {{ lastUpdate }}</p>
+
+L'objet Date a bien été crée, mais sous sa forme actuelle, il n'est pas très utile. L'avantage d'un pipe est de pouvoir modifier l'affichage de cet objet sans en modifier la nature.
+Ajoutons le DatePipe das le templace grâce au caractère | :
+
+<p>Mis à jour : {{ lastUpdate | date }}</p>
+
+La date s'affiche maintenant sous la forme "Mar 3, 2020" dans le DOM; c'est déjà beaucoup plus lisible, mais on peut faire mieux. Angular permeet de paramétrer DatePipe en lui passant un argument de formatage, par exemple :
+
+<p>Mis à jour : {{ lastUpdate | date: 'short' }}</p>
+
+OU
+
+<p>Mis à jour : {{ lastUpdate | date: 'y MMMM EEEE d' }}</p>
+
+Il y a beaucoup de possibilités de formatage de DatePipe : vous trouverez plus d'informations dans la documentation d'Angular.
+
+--------------------------------
+Utilisez une chaîne de Pipes : |
+--------------------------------
+
+Vous pouvez avoir besoin de plusieurs pipes pour un seul élément du DOM. Imaginez, par exemple, que vous souhaitiez afficher la date de l'exemple précédent en majuscules. Vous aurez simplement à faire comme cela :
+
+<p>Mis à jour : {{ lastUpdate | date: 'yMMMMEEEEd' | uppercase }}</p>
+
+L'ordre des pipes est important. Si vous les inversez, UpperCasePipe ne fonctionnera pas et votre application n'affichera rien. Pensez à l'odre dans lequel les modifications doivent être exécutées et mettez les pipes dans cet ordre.
+
+--------
+Async :|
+--------
+
+Le pipe async est un cas particulier mais extrêmement utile dans les applications Web, car il permet de gérer des données asynchrones, par exmple des données que l'application doit récupérer sur un serveur. Dans les chapitres suivants, vous apprendrez à communiquer avec un serveur extérieur, mais pour l'instant, vous allez simuler ce comportement en créant une Promise qui va se résoudre au bout de quelques secondes.
+Modifiez lastUpdate comme suit :
+
+lastUpdate = new Promise((resolve, reject) => {
+    const date = new Date();
+    setTimeout(
+      () => {
+        resolve(date);
+      }, 2000
+    );
+  });
+
+  Si vous enregistrez le fichier, l'application vous créera une erreur :
+
+  Error: InvalidPipeArgument: '[object Promise]' for pipe 'DatePipe'.
+
+En effet, au moment de générer le DOM, lastUpdate est encore une Promise et n'a pas de valeur modifiable avec les pipes.
+
+Ce genre d'erreur n'est pas limitée à l'utilisation de pire. Si vous essayez d'afficher une Promise sans pipe, elle s'affichera "[object Promise]".
+
+Il nous faut donc ajouter AsyncPipe en début de chaîne pour dire à Angular d'attendre l'arrivée des données avant d'exécuter les autres pipes :
+
+<p>Mis à jour : {{ lastUpdate | async | date: 'yMMMMEEEEd' | uppercase }}</p>
+
+Maintenant, quand votre page recharge, le champ "Mis à jour" est vide et puis, au bout de deux secondes, les données retournées par la Promise sont reçues, modifiées par les pipes suivants, et affichées.
+
+---------------------------
+Qu'est ce qu'un service ? |
+---------------------------
+
+Dait très simplement,  un service permet de centraliser des parties de votre code et des données qui sont utilisées par plusieurs parties de votre application ou de manière globale par l'application entière. 
+Les services permettent donc :  
+  - de ne pas avoir le même code doublé ou triplé à différents niveaux de l'application ca facilite donc la maintenance, la lisibilité et la stabilit du code;
+  - de ne pas copier inutilemnt des données si tout est centralisé, chaque partie de l'application aura accès aux mêmes informations, évitant beaucoup d'erreurs potentielles.
+
+Dans le cas de l'application que vous avez créee lors des derniers chapitres, on pourrait imaginer un service AppareilService qui contiendrait les données des appareils électriques, et également des fonctios globales liées aux appareils, comme "tout allumer" ou "tout éteindre"que vous pourrez enfin intégrer. L'authentification reste simulée pour l'instant, mais quand vous l'intégrerez, on pourrait imaginer un deuxième service AuthService qui s'occuperait de vérifier l'authentification de l'utilisateur, et qui pourrait également stocker des informations sur l'utilisateur actif comme son adresse mail et son pseudo.`
+
+--------------------------
+Injection et instances : |
+--------------------------
+
+Pour être utilisé dans l'application, un service doit être injecté, et le niveau choisi pour l'injection est très important. Il y a trois niveaux possibles pour cette injection :
+  - dans AppModule : ainsi, la même innstance du service sera utilisée par tous  les components de l'application t par es autres services;
+  - dans AppComponent : comme ci-dessus, tous les components auront accès à la même instance du service mais non les autres services;
+   dans un autre component : le component lui-même et tous ses enfants (c'est-à-dire tous es components qu'il englobe) auront accès à la même instance du service, mais lerste de l'applicatio n'y aura pas accès.
+
+Pour les exemples de ce cours, vous injecterez systématiquement les services dans AppModule pour rendre disponible une seule instance par service à toutes les autres parties de votre application.
+
+Créez maintenant un sous-dossier services dans app, et créez-y un nouveau fichier appelé appareil.service.ts
+
+export class AppareilService {
+  
+}
+
+Vous y intégrerez bienntôt des données et des fonctions, mais pour l'instant, vous allez injecter ce service dans AppModule en l'ajoutant à l'array providers (n'oubliez pas d'ajouter l'import correspondant en haut du fichier) :
+
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+
+import { AppComponent } from './app.component';
+import { MonPremierComponent } from './mon-premier/mon-premier.component';
+import { AppareilComponent } from './appareil/appareil.component';
+import { FormsModule } from '@angular/forms';
+import { AppareilService } from './services/appareil.service';
+
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    MonPremierComponent,
+    AppareilComponent
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule
+  ],
+  providers: [
+    AppareilService
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+Angular crée maintenant une instance du service AppareilService pour l'application entière. Pour l'intégrer dans un component, on le déclare comme argument dans son constructeur. Intégrez-le dans AppComponent (sans oublier d'ajouter l'import en haut) :
+
+constructor(private appareilService: AppareilService) {
+    setTimeout(
+      () => {
+        this.isAuth = true;
+      }, 4000
+    );
+  }
+
+Maintenant, dans AppComponent, vous avez un membre appelé appareilService qui correspond à l'instance de ce service que vous avez crée dans AppModule. Vous y ajouterez de la fonctionnalité dans le chapitre suivant.
+
+-------------------------
+Utilisez les services : |
+-------------------------
+
+Le premier élément qu'il serait logique de déporter dans le service serait l'array apparareils.
+Copiez-le depuis AppComponent, collez-le dans AppareilService et, de nouveau dans AppComponent, déclarez appareils simplement comme u array de type any.
+
+export class AppareilService {
+  appareils = [
+    {
+      name: 'Machine à laver',
+      status: 'éteint'
+    },
+    {
+      name: 'Frigo',
+      status: 'allumé'
+    },
+    {
+      name: 'Ordinateur',
+      status: 'éteint'
+    }
+  ];
+}
+
+export class AppComponent {
+
+  isAuth = false;
+
+  appareils: any[];
+
+Il faut maintenant que AppComponent puisse récupérer les informations stockées dans AppareilService. Pour cela, vous allez implémenter la méthode ngOnInit().
+
+ngOnInit() correspond à une "lifecyle hook". Le détail de ces hooks va au-delà du cadre de ce cours, mais pour l'instant, toutce que vous avezbesoin de savoir, c'est que la méthode ngOnInit() d'un component est excutée ue fois par instance au moment de la créationn du component par Angular, et après son constructeur. On l'utilise très souvent pour innitialiser des donnnées une fois le component créé. Plus tard dans cette partie du cours, vous découvrirez galement ngOnDestroy().
+
+Pour ce faire, vous allez d'abord créer la fonctio ngOnInit() généralement on la place après le constructeur et avant les autres méthodes du component :
+
+constructor(private appareilService: AppareilService) {
+    setTimeout(
+      () => {
+        this.isAuth = true;
+      }, 4000
+    );
+  }
+
+ngOnInit() {
+
+}
+
+Ensuite, dans la déclaration de classe AppComponent, vous allezimplémenter l'interface OnInit (en l'important depuis @angular/core en haut): 
+
+import { Component, OnInit } from '@angular/core';
+import { AppareilService } from './services/appareil.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent implements OnInit {
+
+Vous pouvez mainteant récupérer les informations depuis AppareilService dans la méthode ngOnInit() :
+
+ngOnInit() {
+    this.appareils = this.appareilService.appareils;
+}
+
+La liaison directe à un array comme ici n'est généralement pas un best practice. J'aichisi d'employer cette méthode ici pour montrer plus simplement l'intégration des services.
+
+Votre application devrait fonctionner à nouveau, avec la liste des appareils électriques qui s'affiche comme avant. Il n'y a aucune différence visuelle, mais votre code est maintenant plus modulaire, et ce sera plus facile d'ajouter des fonctionnalités. Par exemple, vousallz pouvoir crer deux ouvelles méthodes : switchOnAll() et switchOffAll() pour allumer ou éteindre tous les appareils d'un coup.
+
+Commencez par préparer ces méthodes dans AppareilService 
+
+switchOnAll() {
+    for(let appareil of this.appareils) {
+      appareil.status = 'allumé';
+    }
+}
+
+switchOffAll() {
+    for(let appareil of this.appareils) {
+      appareil.status = 'éteint';
+    }
+}
+
+Puis ajoutez un deuxième bouton dans le template de AppComponent :
+
+<button class="btn btn-success"
+              [disabled]="!isAuth"
+              (click)="onAllumer()">Tout allumer</button>
+<button class="btn btn-danger"
+              [disabled]="!isAuth"
+              (click)="onEteindre()">Tout éteindre</button>
+
+Enfin, il ne vous reste plus qu'à capture les événements click dans AppComponent pour ensuite déclecher les méthodes dans AppareilService. Commencez déjà par onAllumer() : 
+
+onAllumer() {
+    this.appareilService.switchOnAll();
+}
+
+Ensuite, pour  onEteindre() , vous allez d'abord afficher un message de confirmation pour vous assurer que l'utilisateur est certain de vouloir tout éteindre :
+
+Vos boutons allument et éteignent tous les appareils grâce à la communication entre votre  AppComponent  et votre  AppareilService .
+
+Mais j'aurais pu faire tout ça à l'intérieur du component - quel est l'intérêt d'avoir tout mis dans un service ?
+
+Effectivement, les fonctionnalités que vous avez ajoutées pour l'instant auraient pu rester dans  AppComponent , mais dans le chapitre suivant, vous allez profiter du service pour créer de la communication entre vos components, notamment des components enfants vers leur parent.
+
+-------------------------------------
+Faites communiquer vos components : |
+-------------------------------------
+
+Pour l'instant, votre utilisateur ne peut qu'allumer ou éteindre tous les appareils à la fois Ce qui pourrait être très intéressant, ce serait qu'il puisse en allumer ou éteindre un à la fois. Actuellement, le plan de l'application ressemble à ça :
+
+https://user.oc-static.com/upload/2018/02/23/15194057472768_Screen%20Shot%202018-02-23%20at%2018.08.45.png
+
+AppareilService fournit les données sur les appareils à AppComponent. Ensuite AppComponent génère trois instances de AppareilComponent selon ces données. Il n'y a actuellement aucune communication entre les components enfants et leur parent.
+Vous pouvez modifier cela en intégrant AppareilService dans les AppareilComponent et en créant des méthodes qui permettent de modifier un appareil à la fois. Procédez étape par étape.
+
+Dans un premier temps, il faudra que chaque instance de AppareilComponent puisse dire à AppareilService à quel membre de l'array appareils elle correspond. Heureusement, Angular nous permet de faire ça facilement.das la directive *ngFor, ajoutez : 
+
+<ul class="list-group">
+    <app-appareil  *ngFor="let appareil of appareils; let i = index"
+                   [appareilName]="appareil.name"
+                   [appareilStatus]="appareil.status"></app-appareil>
+</ul>
+
+Cette commande rend disponible l'index de l'objet appareil dans l'array appareils. Ensuite, il faut pouvoir capturer et travailler avec cette variable : vous pouvez utiliser le property binding. Pour cela, ajoutez un membre index au component en tant que @Input() :
+
+@Input() appareilName: string;
+@Input() appareilStatus: string;
+@Input() index: number;
+
+Puis liez-y l'index i depuis le template :
+
+<ul class="list-group">
+    <app-appareil  *ngFor="let appareil of appareils; let i = index"
+                   [appareilName]="appareil.name"
+                   [appareilStatus]="appareil.status" 
+                   [index]="i"></app-appareil>
+</ul>
+
+A partir de la, vous avez une variable index dispoible à l'intérieur du component qui correspond à l'index de l'appareil dans l'array de AppareilService. Vous verrez dans quelques instants pourquoi vous en avez besoin.
+
+Dans AppareilService, vous allez mintenant créer les méthodes permettant d'allumer ou d'éteindre un seul appareil en focntionn de son index dans l'array appareils :
+
+switchOnOne(i: number) {
+    this.appareils[i].status = 'allumé';
+}
+
+switchOffOne(i: number) {
+    this.appareils[i].status = 'éteint';
+}
+
+Ensuite, dansAppareilComponent, vous allez d'abord intégrer le service AppareilService, en l'important en haut du fichier cmome toujours :
+
+constructor(private appareilService: AppareilService) { }
+
+Puis vous allez préparer la méthode qui, en fonctio du status actuel de l'appareil, l'allumera ou l'éteindra :
+
+Le nom onSwitch() ici est choisi pour respecter la norme d'employer "on" pour la capture d'un événement, et non pour dire "switch on" comme "allumer".
+
+Enfin, vous allez créer le bouton dans le template qui déclenchera cette méthode. Il serait intéressant que ce bouton soit contextuel : si l'appareil est allumé, il affichera "Eteindre" et inversement. Pour cela, le plus simple est de créer deux boutons dotés de la directive *ngIf :
+
+<li [ngClass]="{'list-group-item': true,
+                'list-group-item-success': appareilStatus === 'allumé',
+                'list-group-item-danger': appareilStatus === 'éteint'}">
+  
+  <h4 [ngStyle]="{color: getColor()}">Appareil : {{ appareilName }} -- Statut : {{ getStatus() }}</h4>
+  <input type="text" class="form-control" [(ngModel)]="appareilName">
+
+  <button class="btn btn-sm btn-success"
+          *ngIf="appareilStatus === 'éteint'"
+          (click)="onSwitch()">Allumer</button>
+  <button class="btn btn-sm btn-danger"
+          *ngIf="appareilStatus === 'allumé'"
+          (click)="onSwitch()">Eteindre</button>
+
+</li>
+
+Vous pouvez supprimer la <div> conditionnelle rouge, car elle ne sert pus vraiment, avec tous les styles que vous avez ajoutés pour signaler l'état d'un appareil.
+
+Et voilà ! Vos components communiquent entre eux à l'aide du service, qui centralise les données et certaines fonctionnalités Même si les effets ne sont que visuels pour l'instant, vous pouvez très bine imaginer qu'à l'intérieur des méthodes du service AppareilService, il y ait des appels API permettant de vraiment allumer ou éteindre les appareils et d'en vérifier le fonctionnement.
+
+---------------------------------------
+Gérez la navigation avec le Routing : |
+---------------------------------------
+
+L'un des énormes avantags d'utiliser Angular est de pouvoir créer des "sigle page application" (SPA). Sur le Web, ces applications sont rapides et lisses : il n'y a qu'un seu chargement de page au début, et même si les données mettent parfois du tmps à arriver, la sensatio pour l'utilisatur est celle d'une aplication native. Au lieu de charger une ouvelle page à chaque clic ou à chaque changement d'URK, on remplace le conteu ou une parti du conteu de la page : on modifie tout cela avec le "routing", où l'application lit le conteu de l'URL pour afficher le ou les components requis.
+
+L'application des appareils lectriques n'a que la view des appareils à afficher pour le moment; je vous propose de créer un componnt pour l'authentification (qui restera simulée pour l'instant) et vous crééerezun menu permettant de naviguer entre les views.
+
+Tout d'abord, créez le component avec le CLI :
+
+ng g c auth
+
+Vous alez également devoir modifier un peu l'organisation actuelle afin d'intégrer plus facilement le routing : vous allezcrer u compoent qui ontiendra toute la view actuelle et qui s'appellera AppareilViewComponent :
+
+ng g c appareil-view
+
+Ensuite, coupez tout le contenu de la colonne dans app.component.html, eregistrez le dans appareil-view.component.html, et remplacez-le par la nouvelle balise <app-appareil-view> :
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <app-appareil-view></app-appareil-view>
+    </div>
+  </div>
+</div>
+
+Il faudra également déménager la logique de cette view pour que tout re-marche : injectez ApareilService, créez l'array appareils, intégrez la logique ngOnInit et déplacez les fonctions onAllumer() et onEteindre()
+
+import { Component, OnInit } from '@angular/core';
+import { AppareilService } from '../services/appareil.service';
+
+@Component({
+  selector: 'app-appareil-view',
+  templateUrl: './appareil-view.component.html',
+  styleUrls: ['./appareil-view.component.scss']
+})
+export class AppareilViewComponent implements OnInit {
+
+  appareils: any[];
+
+  lastUpdate = new Promise((resolve, reject) => {
+    const date = new Date();
+    setTimeout(
+      () => {
+        resolve(date);
+      }, 2000
+    );
+  });
+
+  constructor(private appareilService: AppareilService) { }
+
+  ngOnInit() {
+    this.appareils = this.appareilService.appareils;
+  }
+
+  onAllumer() {
+    this.appareilService.switchOnAll();
+  }
+
+  onEteindre() {
+    if(confirm('Etes-vous sûr de vouloir éteindre tous vos appareils ?')) {
+      this.appareilService.switchOffAll();
+    } else {
+      return null;
+    }
+  }
+
+}
+
+Vous pouvez faire le ménage dans AppComponent, en retirant tout ce qui n'y sert plus. Créez galement une boolean isAuth dans AppareilViewComponent, et déclarez-la comme faksen car vous allez intégrer un srvice d'authentification pour la suite.
+
+Ajouter la barre de navigation suivante à AppComponent :
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="#">Authentification</a></li>
+        <li class="active"><a href="#">Appareils</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+Maintenant, tout est prêt pour créer le routing de l'application.
+
+--------------------
+Créez des routes : |
+--------------------
+
+Tout d'abord, qu'est ce qu'une route dans une application Angular ?
+
+Il s'agit des instructions d'affichage à suivre pour chaque URL,, c'est-à-dire quel(s) component(s) il faut afficher à quel(s) endroit(s) pour un URL donné.
+
+Puisque le routing d'une application est fondamentale pour son fonctionnement, on déclare les routes danns app.module.ts
+
+Il est possible d'avoir un fichier séparé pour le routing, mais en terms de fonctionnalité, cela ne change rien : c'est juste une questio d'organisation du code.
+
+On crée une constante de type de Routes (qu'on importe depuis @angular/router) qui est un array d'objets JS qui prennennt une certaine forme :
+
+import { NgModule } from '@angular/core';
+
+import { AppComponent } from './app.component';
+import { MonPremierComponent } from './mon-premier/mon-premier.component';
+import { AppareilComponent } from './appareil/appareil.component';
+import { FormsModule } from '@angular/forms';
+import { AppareilService } from './services/appareil.service';
+import { AuthComponent } from './auth/auth.component';
+import { AppareilViewComponent } from './appareil-view/appareil-view.component';
+import { Routes } from '@angular/router';
+
+const appRoutes: Routes = [
+  { path: 'appareils', component: AppareilViewComponent },
+  { path: 'auth', component: AuthComponent },
+  { path: '', component: AppareilViewComponent }
+];
+
+Le path correspond au string qui viendra après le / dans l'URL : sur votre serveur local, le premier path ici correspond donc à localhost:4200/appareils.
+
+Ne pas ajouter de slash au début de la propriété path.
+
+Ensuite, le component correspond au component que l'on veut afficher lorsque l'utilisateur navigue au path choisi.
+
+J'ai ajouté u path vide, qui correspond tout simplement à localhost:4200 (ou à la racine de l'application seule), car si on ne traite pas le path vide, chaque refresh de l'application la fera planter. Je vous montrerai d'autres façons de gérer cela dans les chapitres suivants.
+
+Les routes sont maintenants créées, mais il faut les enregistrer dans votre application. Pour cela, vous allez importer RouterModule depuis @angular/router et vous allez l'ajouter à l'array imports de votre AppModule, tout en lui appelant la méthode forRoot() en lui passant l'array de routes que vous venez de créer :
+
+imports: [
+    BrowserModule,
+    FormsModule,
+    RouterModule.forRoot(appRoutes)
+],
+
+Maintenant que les routes sont enregistrées, il ne reste plus qu'à dire à Angular où vous souhaitez afficher les  components dans le template lorsque l'utilisateur navigue vers la route en question On utilise la balise <router-outlet> :
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+Lorsque vous changez de route (pour l'instant, en modifiat l'URL directement dans la barre d'adresse du navigateur) la page n'est pas rechargée, mais le contenu sous la barre de navigation change. Dans le chapitre suivant, vous allez intégrer les liens de la barre de navigation afin que l'utilisateur puisse naviguer facilement.
+
+--------------------------------
+Naviguez avec les routerLink : |
+--------------------------------
+
+Afin que l'utilisateur puisse naviguer à l'interieur de votre application, il est nécessaire de créer des liens ou des boutons qui aviguent vers les routes que vous avez créées. Dans le chapitre précédent, vous avez créé des liens typiques dans la barre de navigation, mais qui ne font rien pour l'instant.
+
+Vous pourriez vous dire qu'il suffirait de marquer le path de vos routs directement dans l'attribut href, et techniquement, cela permet d'atteindre les routes que vous avez créées
+
+Alors pourquoi on ne fait pas comme ça ?
+
+Tout simplement parce que, si vous regardez bien, en employant cette technique, la page est rechargée à chaque clic ! On perd totalement l'intérêt d'une Single Page App !
+
+Du coup, on retire l'attribut href et on le remplace par l'attribut routerLink :
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li><a routerLink="auth">Authentification</a></li>
+        <li class="active"><a routerLink="appareils">Appareils</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+Ainsi, les routes sont chargées instantanément : on conserve l'ergonomie d'une SPA.
+
+Pour finaliser cette étape, il serait intéessant que la classe active ne s'applique qu'au lien du component réellement actif. Heureusement, Angular fournit un attribut pour cela qui peut être ajouté au lien directement ou à son élément parent :
+
+<ul class="nav navbar-nav">
+    <li routerLinkActive="active"><a routerLink="auth">Authentification</a></li>
+    <li routerLinkActive="active"><a routerLink="appareils">Appareils</a></li>
+</ul>
+
+Maintenant, les liens s'activent visuellement.
+
+---------------------------
+Naviguez avec le Router : |
+---------------------------
+
+Il peut y avoir des cas où vous aurez besoin d'exécuter du code avant une navigation. Par exemple, on peut avoir besoi d'authentifier un utilisateur et, si l'authentification fonctione, de naviguer vers la pag que l'utilisateur souhaite voir. Je vous propose d'intégrer cette fonctionnalité à l'application des appareils électriques (l'authentification elle-même restera simulée pour l'instant).
+
+Tout d'abord, créez un nouveau fichier auth.service.ts dans le dossier services pour gérer l'authetificatio (n'oubliez pas de l'ajouter égalemennt dans l'array providers dans AppModule) :
+
+export class AuthService {
+
+  isAuth = false;
+
+  signIn() {
+    return new Promise(
+      (resolve, reject) => {
+        setTimeout(
+          () => {
+            this.isAuth = true;
+            resolve(true);
+          }, 2000
+        );
+      }
+    );
+  }
+
+  signOut() {
+    this.isAuth = false;
+  }
+}
+
+La variable isAuth donne l'état d'authentification de l'utilisateur. La méthode signOut() "déconnecte" l'utilisateur, et la méthode signIn() authentifie automatiquement l'utilisateur au bout de 2 secondes, simulant le délai de commuincation avec un serveur.
+
+Dans le component AuthComponent, vous allez simplement créer deux boutons et les méthodes correspondantes pour se conecter et se déconnecter (qui s'afficheront de manière contextuelle : le bouton "se connecter" ne s'affichera que si l'utilisateur est déconnecté et vice versa) :
+
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../services/auth.service';
+
+@Component({
+  selector: 'app-auth',
+  templateUrl: './auth.component.html',
+  styleUrls: ['./auth.component.scss']
+})
+export class AuthComponent implements OnInit {
+
+  authStatus: boolean;
+
+  constructor(private authService: AuthService) { }
+
+  ngOnInit() {
+    this.authStatus = this.authService.isAuth;
+  }
+
+  onSignIn() {
+    this.authService.signIn().then(
+      () => {
+        console.log('Sign in successful!');
+        this.authStatus = this.authService.isAuth;
+      }
+    );
+  }
+
+  onSignOut() {
+    this.authService.signOut();
+    this.authStatus = this.authService.isAuth;
+  }
+
+}
+
+Puisque la méthode signIn() du service retournne une Promine, on employer une foction callbach asynchronee avec .then() pour éxécutr du code une fois la Promise résolue. Ajoutez simplement les boutos, et tout sera prêt pour intégrer la navigation : 
+
+<h2>Authentification</h2>
+<button class="btn btn-success" *ngIf="!authStatus" (click)="onSignIn()">Se connecter</button>
+<button class="btn btn-danger" *ngIf="authStatus" (click)="onSignOut()">Se déconnecter</button>
+
+Le comportement recherchéé serait qu'une fois l'utlisateur authentifié, l'application navigue automatiquement vers la view des appareils. Pour cela, il faut injecter le Route (importé depuis @angular/router) pour accéder à la mthode navigate() :
+
+constructor(private authService: AuthService, private router: Router) { }
+
+onSignIn() {
+    this.authService.signIn().then(
+      () => {
+        console.log('Sign in successful!');
+        this.authStatus = this.authService.isAuth;
+        this.router.navigate(['appareils']);
+      }
+    );
+}
+
+La fonction navigate prend comme argument un array d'éléments (ce qui permet de créer des chemins à partir de variables, par exemple) qui, dans ce cas, n'a qu'un seul membre : le path souhaité.
+
+Le chemin appareils est toujours accessibe actuellement, même sans authentification : dans un chapitre ultérieur, vous apprendrez à le sécuriser totalement. Avant cela, vous allez appredre à ajouter des paramètres à vos routes.
+
+------------------------
+Paramètres de routes : |
+------------------------
+
+Imaginez qu'on souhaite pouvoir cliquer sur un appareil dans la liste d'appareils afin d'afficher une page avec plus d'informations sur cet appareil : on peut imaginer un système de routing de type appareils/nom-de-l'appareil, par exemple. Si on n'avait que deux ou trois appareils, on pourrait être tenté de créer une route par appareil, mais imaginez un cas de figure où l'on aurait 30 appareils, ou 300. Imaginez qu'on laisse l'utilisateur créer de nouveaux appareils; l'approche de créer une route par appareil n'est pas adaptée. Dans ce genre de cas, on choisira plutôt de créer une route avec paramètre.
+
+Tout d'abord, vous allez créer la route dans AppModule :
+
+const appRoutes: Routes = [
+  { path: 'appareils', component: AppareilViewComponent },
+  { path: 'appareils/:id', component: SingleAppareilComponent },
+  { path: 'auth', component: AuthComponent },
+  { path: '', component: AppareilViewComponent }
+];
+
+L'utilisation des deux-point : avant un fragment de route déclare ce fragment comme étant un paramètre : tous leschemins de type appareils/* seront renvoyés vers SingleAppareilComponent, que vous allez maintenant créer : 
+
+import { Component, OnInit } from '@angular/core';
+import { AppareilService } from '../services/appareil.service';
+
+@Component({
+  selector: 'app-single-appareil',
+  templateUrl: './single-appareil.component.html',
+  styleUrls: ['./single-appareil.component.scss']
+})
+export class SingleAppareilComponent implements OnInit {
+
+  name: string = 'Appareil';
+  status: string = 'Statut';
+
+  constructor(private appareilService: AppareilService) { }
+
+  ngOnInit() {
+  }
+
+}
+
+<h2>{{ name }}</h2>
+<p>Statut : {{ status }}</p>
+<a routerLink="/appareils">Retour à la liste</a>
+
+
+Pour l'instant, si vous naviguez vers /appareils/nom, peu importe le om que vous choisissez, vous avez accès à SingleAppareilComponent. Maintenant, vous allez y injecter ActivatedRoute, importé depuis @angular/routr, afin de récupérr le fragment id de l'URL : 
+
+constructor(private appareilService: AppareilService,
+            private route: ActivatedRoute) { }
+
+Puis dans ngOnInit(), vous allez utiliser l'object snapshot qui contient les paramètres de l'URL et, pour l'instant, attribuer le paramètre id à la variable name :
+
+ngOnInit() {
+    this.name = this.route.snapshot.params['id'];
+}
+
+Ainsi le fragment que vous tapez dans la barre d'adresse après appareils s'affichera dans le template, mais ce n'est pas le comportement recherché. Pour atteindre l'objectif souhaité, commencez par ajoutern dans AppareilService, un identifiant unique pour chaque appareil et une méthode qui rendre l'appareil correspondant à un identifiant :
+
+appareils = [
+    {
+      id: 1,
+      name: 'Machine à laver',
+      status: 'éteint'
+    },
+    {
+      id: 2,
+      name: 'Frigo',
+      status: 'allumé'
+    },
+    {
+      id: 3,
+      name: 'Ordinateur',
+      status: 'éteint'
+    }
+];
+
+getAppareilById(id: number) {
+    const appareil = this.appareils.find(
+      (s) => {
+        return s.id === id;
+      }
+    );
+    return appareil;
+}
+
+Maintenant, dans SingleAppareilComponent, vous allez récupérer l'identifiant de l'URL et l'utiliser pour récupérer l'appareil correspondant :  
+
+ngOnInit() {
+    const id = this.route.snapshot.params['id'];
+    this.name = this.appareilService.getAppareilById(+id).name;
+    this.status = this.appareilService.getAppareilById(+id).status;
+}
+
+Puisqu'un d'URL est forcément de type strin et que la méthode getAppareilById() prend un nombre comme argument, il ne faut pas oublier d'utiliser + avant id dans l'appel pour caster la variable nombre.
+
+Vous pouvez naviger manuellement vers /appareils/2, par exemple, mais cela recharge encore la page, et vous perdez l'état des appareils (si vous en allumez ou éteignez par exemple). Pour finaliser cette fonctionnnalit, intégrez l'identifiant unique dans AppareilComponent et dans AppareilViewComponent, puis créez un routerLink pour chaque appareil qui permet d'en regarder le détail :  
+
+@Input() appareilName: string;
+@Input() appareilStatus: string;
+@Input() index: number;
+@Input() id: number;
+
+<ul class="list-group">
+  <app-appareil  *ngFor="let appareil of appareils; let i = index"
+                 [appareilName]="appareil.name"
+                 [appareilStatus]="appareil.status"
+                 [index]="i" 
+                 [id]="appareil.id"></app-appareil>
+</ul>
+
+<h4 [ngStyle]="{color: getColor()}">Appareil : {{ appareilName }} -- Statut : {{ getStatus() }}</h4>
+<a [routerLink]="[id]">Détail</a>
+
+Ici, vous utilisez le format array pour routerLink en property binding afin d'accéder à la variable id.
+
+Ca y est! Vous pouvez maintenant accéder à la page Détail pour chaque appareil, et les informations de status qui s'y trouvent sont automatiquement à jour grâce à l'utilisation du server.
+
+---------------
+Redirection : |
+---------------
+
+Il peut y avoir ddes cas de figure où l'on souhaiterait rediriger un utilisateur, par exemple pour afficher une page 404 lorsqu'il entre une URL qui n'existe pas.
+
+Pour l'applicatin des appareils électriques, commencez par créer un component 404 très simple, appelé four-oh-four.component.ts
+
+<h2>Erreur 404</h2>
+<p>La page que vous cherchez n'existe pas !</p>
+
+Ensuite, vous allez ajouter la route "directe" vers cettepage, ainsi qu'une route "wildcard", qui redirigera toute route inconnnue vers la page d'erreur :
+
+const appRoutes: Routes = [
+  { path: 'appareils', component: AppareilViewComponent },
+  { path: 'appareils/:id', component: SingleAppareilComponent },
+  { path: 'auth', component: AuthComponent },
+  { path: '', component: AppareilViewComponent },
+  { path: 'not-found', component: FourOhFourComponent },
+  { path: '**', redirectTo: 'not-found' }
+];
+
+Ainsi, quand vous entrez un chemin dans la barre de navigation qui n'est pas directement pris en charge par votre application, vous êtes redirigé vers /not-found et donc le component 404.
+
+----------
+Guards : |
+----------
+
+Il peut y avoir des cas de figure où vous souhaiterez exécuter du code avant qu'un utilisateur puisse accéder à une route; par exemple, vous pouvez souhaiter véérifier son authentification ou son identité. Techniquement, ce serait possible en insérant du code dans la méthode ngOnInit() de chaque component, mais cela deviendrait lourd, avec du code répété, une multiplication des erreurs potentielles. Ce serait donc mieux d'avoir une façon de centraliser ce genre d fonctionnalité. Pour cela, il existe la guard canActivate.
+
+Une guard est en effet un service qu'Angular exécutera au moment où l'utilisateur essaye de naviguer vers la route sélectionnée. Ce service implémente l'interface canActivate, et donc doit contenir ue méthode du même nom qui prend les arguments ActivatedRouteSnapshot et RouterStateSnapshot (qui lui seront fournis par Angular au moment de l'exécution) et retourne une valeur booléenne, soit de mainère synchrone (boolean), soit de manière asynchorne (sous forme de Promise ou d'Observable) :
+
+import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+
+export class AuthGuard implements CanActivate {
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+    
+  }
+}
+
+N'oubliez pas d'importer les différents éléments en haut du fichier.
+
+Si vous ne connaissez pas encore les Observables, ne vous inquiétez pas, vous les découvrirez en détail dans le chapitre suivant.
+
+Sauvegarder le fichier dans le dossier services sous le nom auth-guard.services.ts.
+
+Ensuite, il faut injecter le service AuthService dans ce nous service. Pour intecter un service dans un autre service, il faut que le service dans lequel on injecte un autre ait le décorateur @Injectabl, à importer depuis @angular/core :
+
+import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import { AuthService } from './auth.service';
+import { Injectable } from '@angular/core';
+
+@Injectable()
+export class AuthGuard implements CanActivate {
+
+  constructor(private authService: AuthService) { }
+
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+
+  }
+}
+
+A l'intérieur de la méthode canActivate(), vous allez vérifier l'état de l'authentification dans AuthService. Si l'utilisateur est authentifié, la mthode renverra true  permttant l'accès à la route protégée. Sinon, vous pourriez retourner false, mais cela empêchera simplement l'accès sans autre fonctionnalité. Il serait intéressant de rediriger l'utilisateur vers la page d'authentification, le poussant à s'identifier :
+
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import { AuthService } from './auth.service';
+import { Injectable } from '@angular/core';
+
+@Injectable()
+export class AuthGuard implements CanActivate {
+
+  constructor(private authService: AuthService,
+              private router: Router) { }
+
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+    if(this.authService.isAuth) {
+      return true;
+    } else {
+      this.router.navigate(['/auth']);
+    }
+  }
+}
+
+Pour appliquer cette garde à la route /appareils et à toutes ses routes enfants, il faut l'ajouter dans AppModule. N'oubliez pas d'ajouter AuthGuard à l'array providers, puisqu'il s'agit d'un service :
+
+----------------------------------
+Observez les données avec RxJS : |
+----------------------------------
+
+Pour réagir à des événements ou à des données de manière asynchrone (c'est-à-dire ne pas devoir attendre qu'une tâche, par exemple un appel HTTP, soit terminée avant de passer à la ligne de code suivante), il y a plusieurs méthodes depuis quelques années. Il y a le système de callback, par exemple, ou encore les Promise. Avec l'API RxJS, fourni et très intégré dans Angular, la méthode proposée est celle des Observables.
+
+---------------
+Observables : |
+---------------
+
+Très simplement, un Observable est un objet qui émet des informations auxquelles on souhaite réagir. Ces informations peuvent venir d'un champ de texte dans lequel l'utilisateur rentre des données, ou de la progression d'un chargement de fichier, par exemple. elles peuvent également veinir de la communication avec un serveur : le client HTTP, que vous verrez dans un chapitre ultérieur, emploie les Observables.
+
+Les Observables sont mis à disposition par RxJS, un package tiers qui est fourni avec Angular.
+
+A cet Observable, on associe un Observer - un bloc de code qui sera exécuté à chaque fois que l'Observable émet une information; L'Observable émet trois type d'information : des données, une erreur, ou un message complet. Du coup, tout Observer peut avoir trois fonctions : une pour réagir à chaque type d'information.
+
+Pour créer un cas concret simple, vous alez créer un Observable dans AppComponent qui enverra un ouveau chiffre toutes les secondes. Vous allez ensuite observer cet Observable t l'afficher dans le DOM : de cette manière, vous pourrez dire à l'utilisateur depuis combie de temps il visualise l'application.
+
+Pour avoir accès aux Observables et aux méthodes que vous allez utiliser, il faut ajouter deux imports :
+
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/interval';
+
+Le premier import sert à rendre disponnible le type Observable, et le deuxième vous donne accès à la mthode que vous allez utiliser : la méthode interval(), qui crée un Observable qui émet un chiffre croissant à intervalles réguliers et qui prend le nombre de millisecondes souhaité pour l'intervalle comme argument.
+
+Implémentez OnInit et réez l'Observable dans ngOnInit() :
+
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/interval';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent implements OnInit {
+
+  ngOnInit() {
+    const counter = Observable.interval(1000);
+  }
+}
+
+<ul class="nav navbar-nav">
+    <li routerLinkActive="active"><a routerLink="auth">Authentification</a></li>
+    <li routerLinkActive="active"><a routerLink="appareils">Appareils</a></li>
+</ul>
+<div class="navbar-right">
+    <p>Vous êtes connecté depuis {{ secondes }} secondes !</p>
+</div>
+
+Maintenant vous allez souscrire à l'Observable et créer trois fonnctions : la première va se déclencher à chaque émission de données par l'Observable et va attribuer cette valeur à la variable "secondes"; la deuxième gérera toute erreur éventuelle; et la troisième se déclenchera si l'Observable s'achève :
+
+ngOnInit() {
+    const counter = Observable.interval(1000);
+    counter.subscribe(
+      (value) => {
+        this.secondes = value;
+      },
+      (error) => {
+        console.log('Uh-oh, an error occurred! : ' + error);
+      },
+      () => {
+        console.log('Observable complete!');
+      }
+    );
+}
+
+Dans le cal actuel, l'Observable que vous avez créé ne rendra pas d'erreyr et ne se complétera pas. Je veux simplement vous montrer l'intégration complète de la subscribe(). Il est possible de souscrire à un Observable en intégrant uniquement la première fonction.
+
+Le compteur dans le DOM fonctione, et continuera à compter à l'infini ! Dans le chapitre suivant, vous verrez comment éviter les erreurs potentielles liées à ce genre de comportement infini.
+
+-----------------
+Subscriptions : |
+-----------------
+
+Dans le chapitre précédent, vous avez appris à créer un Observable et à vous y souscrire.
+Pour rappel, la fonction subscribe() pred comme arguments trois fonctions anonymes :
+  - la première se déclenche à chaque fois que l'Observable émet de nouvelles données, et reçoit ces données comme argument;
+  - la deuxième se déclenche si l'Observable émet une erreur, et reçoit cette erreur comme argument;
+  - la troisième se déclenche si l'Observable s'achève, et ne reçoit pas d'argument.
+
+Pour l'instant, cette souscription n'est pas stockée dans une variable : on ne peut donc plus y toucher une fois qu'elle est lancée, et çaa peut vous causer des bugs ! En effet, une souscription à un Observable qui continue à l'infini continuera à recevoir les données, que l'on s'en server ou non, et vous pouvez en subir des comportements inattendus.
+
+Ce n'est pas le cas pour tous les Observables. Généralement, les souscriptions aux Observables fournis par Angular se suppriment toutes seules lors de la destruction du component.
+
+Afin d'éviter tout problème, quand vous utilisez des Observables personnalisés, il est vivement conseillé de stocker la souscription dans un objet Subscription (à imortr depuis rxjs/Subscription) :
+
+export class AppComponent implements OnInit {
+
+  secondes: number;
+  counterSubscription: Subscription;
+
+  ngOnInit() {
+    const counter = Observable.interval(1000);
+    this.counterSubscription = counter.subscribe(
+      (value) => {
+        this.secondes = value;
+      },
+      (error) => {
+        console.log('Uh-oh, an error occurred! : ' + error);
+      },
+      () => {
+        console.log('Observable complete!');
+      }
+    );
+  }
+
+Le code fonctionne de la même manière qu'avant, mais vous ouvez maintenant y ajouter le code qui évitera les bugs liés aux Observables. Vous allez implémenter une nouvelle interface, onDestroy (qui s'importe depuis @angular/core), avec sa fonctio ngOnDestroy() qui se déclenche quand un component est détruit :
+
+export class AppComponent implements OnInit, OnDestroy {
+
+  secondes: number;
+  counterSubscription: Subscription;
+
+  ngOnInit() {
+    const counter = Observable.interval(1000);
+    this.counterSubscription = counter.subscribe(
+      (value) => {
+        this.secondes = value;
+      },
+      (error) => {
+        console.log('Uh-oh, an error occurred! : ' + error);
+      },
+      () => {
+        console.log('Observable complete!');
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    this.counterSubscription.unsubscribe();
+  }
+}
+
+La fonction unsubscribe() détruit la souscription et empêche les comportements inattendus liés aux Observable infinis, donc n'oubliez pas de unsubscribe !
+
+------------
+Subjects : |
+------------
+
+Il existe d'Observable qui permet non seulement de réagir à de nouvelles informations, mais également d'en émettre. Imaginez une variable dans un service, par exemple, qui peut être modifié depuis plusieurs components ET qui fera réagir tous les components qui y sont liés en même temps. Voici l'intérêt des Subjects.
+
+Pour l'application des appareils életriques, l'utilisation d'un Subject pour gérer lamiseà jour des appareils életriques permettra de mettre en place un niveau d'abstractionn afin d'éviter des bugs potentiels avec la manipulation de données. Pour l'instant, l'array dans AppareilViewComponent est une référence directe à l'array dans AppareilService. Dans ce cas précis, cela fonctionne, mais dans une application plus complexe, cela peut créer des problèmes de gestion de données. De plus, le service ne peut rien refuser : l'array peut être modifié directement depuis n'importe quel endroit du code. Pour corriger cela, il y a plusieurs étapes :
+  - rendre l'array des appareils private;
+  - créer un Subject dans le service;
+  - créer une méthode qui, uand le service reçoit de nouvelles données, fait émettre ces données par le Subject et appeler cette méthode dans toutes les méthodes qui en ont besoin;
+  - souscrire à ce Subject depuis AppareilViewComponent pour recevoir les données émises, émettre les premières données, et implémenter onDestroy pour détruite la souscription.
+
+Première étape (dans AppareilService)
+
+  private appareils = [
+    {
+      id: 1,
+      name: 'Machine à laver',
+      status: 'éteint'
+    },
+    {
+      id: 2,
+      name: 'Frigo',
+      status: 'allumé'
+    },
+    {
+      id: 3,
+      name: 'Ordinateur',
+      status: 'éteint'
+    }
+  ];
+
+Deuxième étape (dans  AppareilService  ) :
+
+import { Subject } from 'rxjs/Subject';
+
+export class AppareilService {
+  
+  appareilsSubject = new Subject<any[]>();
+  
+  private appareils = [
+
+Quand vous déclarez un Subject, il faut dire quel type de données il gérera. Puisque nous n'avons pas crée d'interface pour les appareils (vous pouvez le faire si vous le souhaitez), il gérera des array de type any[]. N'oubliez pas l'import !
+
+Troisième étape, toujours dans AppareilService :
+
+emitAppareilSubject() {
+    this.appareilsSubject.next(this.appareils.slice());
+  }
+
+switchOnAll() {
+    for(let appareil of this.appareils) {
+      appareil.status = 'allumé';
+    }
+    this.emitAppareilSubject();
+}
+
+switchOffAll() {
+    for(let appareil of this.appareils) {
+      appareil.status = 'éteint';
+      this.emitAppareilSubject();
+    }
+}
+
+switchOnOne(i: number) {
+    this.appareils[i].status = 'allumé';
+    this.emitAppareilSubject();
+}
+
+switchOffOne(i: number) {
+    this.appareils[i].status = 'éteint';
+    this.emitAppareilSubject();
+}
+
+Dernière étape, dans AppareilViewComponent
+
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AppareilService } from '../services/appareil.service';
+import { Subscription } from 'rxjs/Subscription';
+
+@Component({
+  selector: 'app-appareil-view',
+  templateUrl: './appareil-view.component.html',
+  styleUrls: ['./appareil-view.component.scss']
+})
+export class AppareilViewComponent implements OnInit, OnDestroy {
+
+  appareils: any[];
+  appareilSubscription: Subscription;
+
+  lastUpdate = new Promise((resolve, reject) => {
+    const date = new Date();
+    setTimeout(
+      () => {
+        resolve(date);
+      }, 2000
+    );
+  });
+
+  constructor(private appareilService: AppareilService) { }
+
+  ngOnInit() {
+    this.appareilSubscription = this.appareilService.appareilsSubject.subscribe(
+      (appareils: any[]) => {
+        this.appareils = appareils;
+      }
+    );
+    this.appareilService.emitAppareilSubject();
+  }
+
+  onAllumer() {
+    this.appareilService.switchOnAll();
+  }
+
+  onEteindre() {
+    if(confirm('Etes-vous sûr de vouloir éteindre tous vos appareils ?')) {
+      this.appareilService.switchOffAll();
+    } else {
+      return null;
+    }
+  }
+
+  ngOnDestroy() {
+    this.appareilSubscription.unsubscribe();
+  }
+
+}
+
+L'application refonctionne comme avant, mais avec une différence cruciale de méthodologie : il y a une abstraction entre le service et les components, où les données sont maintenus à jour grâce au Subject.
+
+Pourquoi est-ce important ? 
+
+Dans ce cas prrécis, ce n'est pas fondamentalement nécessaire, mais imaginez qu'on intègre un système qui vérifie périodiquement le status des appareils. Si les données sont mises à jour par une autre partie de l'application, il faut que l'utilisateur voie ce changement sans avoir à recharger la page. Il va de même dans l'autre sens : un changement de niveau du view doit pouvoir être reflété par e reste de l'application sans rechargement.
+
+-------------
+Opérateur : |
+-------------
+
+L'API RxJS propose énormément de possibilités - beaucoup trop pour tout voir dans ce cours. Cependant, j'aimerais vous parler rapidement de l'existence des opérateurs.
+
+Un opérateur est une fonction qui se place entre l'Observable et l'Observer (la Subscription, par exemple), et qui peut filtrer et/ou modifier les données reçues avant même quelles n'arrivent à la Subscription. Voici quelques exemples rapides : 
+  - map() : modifie les valurs reçues - peut effectuer des calculs sur des chiffres, transformer du texte, créer des objets ...
+  - filter() : comme son nom l'indique, filtre les valeurs reçues selon la fonction qu'on lui passe en argument.
+  - throttleTime() : impose un délai minimum entre deux valeurs - par exemple, si un Observable émet cinq vaeurs par secode, mais ce sont uniquement kes valeurs reçues toutes les seondes qui vous intressent, vous pouvez passez throttleTime(1000) comme opérateur.
+   - scan() et reduce() : permettent d'exécuter une fonction qui réunit l'ensemble de valeurs reçues selon une fonction que vous lui passez - par exemple, vous pouvez faire la somme de toutes les valeurs reçues. La différence basique entr les deux opérateurs : reduce() vous retourne uniquement la valeur finale, alors que scan() retourne chaque étape du calcul.
+
+-----------------------------------------------------------
+Ecoutez l'utilisateur avec les Forms - méthode template : |
+-----------------------------------------------------------
+
+Jusqu'ici, dans ce cours, vous avez appris à créer une application dynamique qui peremtt d'échanger des informations entre components à l'aide des services et des Observables, qui change l'affichage selon le routing et qui réagit à certains événements provenant de l'utilisateur, comme des clics sur un bouton, par exemple. Cependant, pour l'instant, toutes les données que vous avez utilisées ont été codées "en dur" dans l'application, c'est-à-dire fournies ni par l'utilisateur, ni par un serveur. Dans les chapitres suivants, vous allez apprendre à intéragir avec l'utilisateur et avec les serveurs afin de créer une application totalement dynamique.
+
+En Angular, il y a deux grandes méthodes pour créer des formulaires :
+
+  - la méthode template : vous créez votre formulaire dans le template, et Angular l'analyse pour comprendre les différents inputs et pour en mettre à disposition le contenu;
+  - la méthode réactive : vous créez votre formulaire en TypeScript et dans le template, puis vous en faites la liaison manuellement — cette approche est plus complexe, mais elle permet beaucoup plus de contrôle et une approche dynamique.
+
+N'oubliez pas d'importer FormsModule dans AppModule si ce n'est pas déjà fait !
+
+-----------------------
+Créez le formulaire : |
+-----------------------
+
+Pour comprendre et pratiquer cette méthode, vous allez créer un nouveau component  EditAppareilComponent  qui permettra à l'utilisateur d'enregistrer un nouvel appareil électrique :
+
+<div class="row">
+  <div class="col-sm-8 col-sm-offset-2">
+    <form>
+      <div class="form-group">
+        <label for="name">
+          Nom de l'appareil
+        </label>
+        <input type="text" id="name" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="status">
+          État de l'appareil
+        </label>
+        <select id="status" class="form-control">
+          <option value="allumé">Allumé</option>
+          <option value="éteint">Éteint</option>
+        </select>
+      </div>
+      <button class="btn btn-primary">Enregistrer</button>
+    </form>
+  </div>
+</div>
+
+Angular parcourt votre template et trouve la balise <form>, créant ainsi un objet qui sera utilisable depuis votre code TypeScript. Avant de passer à la soumission du formulaire, il faut signaler à Angular quels inputs correspondront à des controls, c'est-à-dire des champs dont le contenu est à soumettre. Pour cela, il suffit d'ajouter deux attributs aux inputs en question : un attribut name, qui correspondra à la clef de la paire clef-valeur qui sera rendu qui sera, et l'attribut ngModel, sans parenthèses ni chochets. Ce deuxième attribut signale à que vous souhaitez enregistrer ce controle. Ce deuxième attribut signale à Angular que vous souhaitez enregistrer ce controle : 
+
+<div class="form-group">
+    <label for="name">
+      Nom de l'appareil
+    </label>
+    <input type="text" id="name" class="form-control" name="name" ngModel>
+</div>
+<div class="form-group">
+    <label for="status">
+      État de l'appareil
+    </label>
+    <select id="status" class="form-control" name="status" ngModel>
+      <option value="allumé">Allumé</option>
+      <option value="éteint">Éteint</option>
+    </select>
+</div>
+
+Il faut maintenant préparer la gestion de la soumission de ce formulaire. Dans votre template, au lieu d'ajouter un événement sur le bouton, vous allez déclarer le bouton de ce type submit, et ajouter le code suivant dans la balise <form>
+
+<form (ngSubmit)="onSubmit(f)" #f="ngForm">
+
+<button class="btn btn-primary" type="submit">Enregistrer</button>
+
+Déclarer le bouton de type submit à l'intérieur du <form> déclenche le comportement de soumission classique de HTML. En ajoutant l'attribut (ngSubmit), vous recevez cette soumission et exécutez, la méthode onSubmit() (que vous n'avez pas encore créée).
+
+L'attribut #f est ce qu'on appelle une référence locale. Vous donnez simplement un nom à l'objet sur lequel vous ajoutez cet attribut; ce nom sera ensuite utilisable par Angular. C'est d'ailleurs le cas ici : on appelle le formualaire f pour ensuite le passe comme argument à la méthode de soumission.
+
+De manière générale, on ne donne pas de valeur à une référence locale : on écrit simplement #f ou #my-name. Dans ce cas précis d'un formailre en méthode template, on y attribut la valeur ngForm pour avoir accès à l'objet, crée par Angular.
+
+Pour récapituler : quand l'utlisateur clique sur le bouton de type submit, la méthode que vous attribuez à (ngSumit) est exécutée, et gr^^ace à la référence locale #f="ngForm", vous pouvez passer l'objet à la méthode (et donc la récupérer votre code TypeScript).
+
+Créez maintenant la méthode onSubmit() afin de recevoir les informations venant du formulaire. Pour l'instant, vous allez simplement les afficher dans la console:
+
+onSubmit(form: NgForm) {
+  console.log(fomr.value);
+}
+
+Ici vous utilisez la propriété value du NgForm. L'objet NgForm (à importer depuis @angular/forms comporte beaucoup de propriètés très intéressantes; je n'en expliquerai que certaines dans ce cours, mais vous pouvez en trouver la liste complète dans la documentation officielle.
+
+Pour avoir accès au formulaire, créez une nouvelle route dans AppModule et un routerLink correspondant dans la barre de menu :
+
+const appRoutes: Routes = [
+  { path: 'appareils', canActivate: [AuthGuard], component: AppareilViewComponent },
+  { path: 'appareils/:id', canActivate: [AuthGuard], component: SingleAppareilComponent },
+  { path: 'edit', canActivate: [AuthGuard], component: EditAppareilComponent },
+  { path: 'auth', component: AuthComponent },
+  { path: '', component: AppareilViewComponent },
+  { path: 'not-found', component: FourOhFourComponent },
+  { path: '**', redirectTo: 'not-found' }
+];
+
+<ul class="nav navbar-nav">
+    <li routerLinkActive="active"><a routerLink="auth">Authentification</a></li>
+    <li routerLinkActive="active"><a routerLink="appareils">Appareils</a></li>
+    <li routerLinkActive="active"><a routerLink="edit">Nouvel appareil</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
