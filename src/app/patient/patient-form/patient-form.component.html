@@ -1,39 +1,13 @@
 <div class="row">
   <div class="col-sm-8 col-sm-offset-2">
-    <input type="submit" />
-    <form enctype="multipart/form-data" onsubmit="return checkFile();" (ngSubmit)="patientForm(f)" #f="ngForm">
+    <form enctype="multipart/form-data" (ngSubmit)="patientForm(f)" #f="ngForm">
       <div class="form-group">
-        <label for="lastName">
-          Lastname :
-        </label>
-        <input type="text" id="lastName" class="form-control" name="lastName" ngModel>
-        <label for="firstName">
-          Firstname :
-        </label>
-        <input type="text" id="firstName" class="form-control" name="firstName" ngModel>
         <label for="DICOMfile">
-          Upload DICOM file :
+          Select DICOM file :
         </label>
-        <input name="DICOMfile" id="DICOMfile" type="file" />
-        <button class="btn btn-primary">Submit</button>
+        <input name="DICOMfile" id="DICOMfile" type="file" (change)="handleFileInput($event)"/>
+        <button  class="btn btn-primary" (click)="upload()" id="btnUpload">Upload</button>
       </div>
     </form>
   </div>
 </div>
-
-<script type="text/javascript">
-  function checkFile() {
-    var fileElement = document.getElementById("uploadFile");
-    var fileExtension = "";
-    if (fileElement.value.lastIndexOf(".") > 0) {
-      fileExtension = fileElement.value.substring(fileElement.value.lastIndexOf(".") + 1, fileElement.value.length);
-    }
-    if (fileExtension.toLowerCase() === "dcm") {
-      return true;
-    }
-    else {
-      alert("You must select a DICOM (.dcm) file for upload");
-      return false;
-    }
-  }
-</script>
