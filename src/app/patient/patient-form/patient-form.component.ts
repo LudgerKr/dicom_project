@@ -19,10 +19,6 @@ export class PatientFormComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  patientForm(form: NgForm) {
-      console.log(form.value);
-  }
-
   handleFileInput(element) {
     this.fileToUpload = element.target.files;
   }
