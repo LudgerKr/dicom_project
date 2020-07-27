@@ -26,7 +26,7 @@ export class PatientFormComponent implements OnInit {
   }
 
   upload() {
-    const fileElement = document.getElementById('DICOMfile');
+    const fileElement = document.getElementById('DICOMfile') as HTMLInputElement;
     let fileExtension = '';
     console.log(fileElement)
     if (fileElement.value.lastIndexOf('.') > 0) {
