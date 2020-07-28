@@ -4,7 +4,7 @@ services:
 # server**
   web:
     container_name: docker_java
-    build: ./server
+    build: ./server/demo
     restart: always
     ports:
       - '8080:8080'
@@ -13,7 +13,7 @@ services:
 # angular
   client:
     container_name: docker_angular
-    build: client
+    build: ./client
     restart: always
     ports:
       - '4200:4200'

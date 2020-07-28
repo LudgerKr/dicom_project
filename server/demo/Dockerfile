@@ -1,7 +1,17 @@
-FROM openjdk:11
+FROM maven:3.5-jdk-8-alpine as builder
+
+ADD . /app/
+
 WORKDIR /app
 
-COPY target/demo-0.0.1-SNAPSHOT.jar /app/app.jar
+RUN mvn dependency:resolve
 
-CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/app.jar"]
+RUN  mvn package -e
 
+FROM openjdk:8-jre-alpine
+
+WORKDIR /root/
+
+COPY --from=builder /app/target/ .
+
+CMD ["java", "-jar", "demo-0.0.1-SNAPSHOT.jar"]
