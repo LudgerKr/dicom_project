@@ -1,6 +1,5 @@
 package com.test.demo;
 
-import org.apache.commons.io.IOUtils;
 import org.dcm4che3.io.DicomInputStream;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;

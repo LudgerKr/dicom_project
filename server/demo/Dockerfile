@@ -1,4 +1,4 @@
-FROM maven:3.5-jdk-8-alpine as builder
+FROM maven:3.6-jdk-11-slim as builder
 
 ADD . /app/
 
@@ -6,7 +6,9 @@ WORKDIR /app
 
 RUN mvn dependency:resolve
 
-FROM openjdk:8-jre-alpine
+RUN  mvn package -e
+
+FROM openjdk:11
 
 WORKDIR /root/
 
