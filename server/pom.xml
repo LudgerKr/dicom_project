@@ -19,7 +19,7 @@
 	<repositories>
 		<repository>
 			<id>mylibid</id>
-			<url>${project.basedir}/lib</url>
+			<url>${project.basedir}/demo/lib/</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -43,28 +43,28 @@
 			<artifactId>data</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/dcm4che-core-5.22.3.jar</systemPath>
+			<systemPath>${project.basedir}/demo/lib/dcm4che-core-5.22.3.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.dcm4che3.image</groupId>
 			<artifactId>image</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/dcm4che-image-5.22.3.jar</systemPath>
+			<systemPath>${project.basedir}/demo/lib/dcm4che-image-5.22.3.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.dcm4che3.imageio</groupId>
 			<artifactId>imageio</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/dcm4che-imageio-5.22.3.jar</systemPath>
+			<systemPath>${project.basedir}/demo/lib/dcm4che-imageio-5.22.3.jar</systemPath>
 		</dependency>
 	</dependencies>
 	<build>
 		<resources>
 			<resource>
 				<directory>lib</directory>
-				<targetPath>BOOT-INF/lib/</targetPath>
+				<targetPath>BOOT-INF/demo/lib/</targetPath>
 				<includes>
 					<include>**/*.jar</include>
 				</includes>

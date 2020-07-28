@@ -6,7 +6,7 @@ WORKDIR /app
 
 RUN mvn dependency:resolve
 
-RUN  mvn package
+RUN  mvn package -X
 
 FROM openjdk:8-jre-alpine
 
@@ -14,6 +14,4 @@ WORKDIR /root/
 
 COPY --from=builder /app/target/ .
 
-ENV JAVA_ENV=${JAVA_ENV}
-
-CMD ["java", "-jar", "worker-jar-with-dependencies.jar"]
+CMD ["java", "-jar", "/app/demo/target/demo-0.0.1-SNAPSHOT.jar"]
