@@ -1,0 +1,18 @@
+
+version: '3.2'
+services:
+
+# server**
+  web:
+    build: ./demo
+    expose:
+      - '8080'
+    ports:
+      - '8080:8080'
+# angular
+    web:
+    build: .
+    expose:
+      - '4200'
+    ports:
+      - '4200:4200'
