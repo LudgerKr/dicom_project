@@ -1,18 +1,25 @@
-
-version: '3.2'
+version: '3'
 services:
 
 # server**
   web:
-    build: ./demo
-    expose:
-      - '8080'
+    container_name: docker_java
+    build: ./server
+    restart: always
     ports:
       - '8080:8080'
+    networks:
+      - java-tier
 # angular
   client:
-    build: .
-    expose:
-      - '4200'
+    container_name: docker_angular
+    build: client
+    restart: always
     ports:
       - '4200:4200'
+    networks:
+      - angular-tier
+
+networks:
+  java-tier:
+  angular-tier:
