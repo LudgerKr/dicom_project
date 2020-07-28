@@ -13,7 +13,7 @@ RUN npm install
 RUN npm install -g @angular/cli@7.3.9
 
 # add app
-COPY .. /app
+COPY . /app
 
 # start app
 ENTRYPOINT ["ng", "serve", "--host", "0.0.0.0"]

@@ -6,8 +6,6 @@ WORKDIR /app
 
 RUN mvn dependency:resolve
 
-RUN  mvn package -e
-
 FROM openjdk:8-jre-alpine
 
 WORKDIR /root/
